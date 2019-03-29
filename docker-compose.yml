@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/usr/src/app
+      - stack-work:/usr/src/app/.stack-work
+      - dotstack:/root/.stack
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://mydbuser:mydbpass@db/mydb
+    ports:
+      - 8080:8080
+    command: stack exec servant-on-heroku-api
+  db:
+    image: postgres:11
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: mydbpass
+      POSTGRES_USER: mydbuser
+      POSTGRES_DB: mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  stack-work:
+  postgres_data:
+  dotstack:
